@@ -2,15 +2,13 @@
   hosts: catalogue
   become: yes
   tasks:
-  - name: disable nodejs
+  - name: disable default nodejs
     ansible.builtin.dnf:
       name: nodejs
-      state: absent
+      state: removed
 
   - name: enable nodejs:20
-    ansible.builtin.dnf:
-      name: nodejs:20
-      state: present
+    ansible.builtin.command: dnf module enable nodejs:20 -y
 
   - name: install nodejs
     ansible.builtin.dnf:
