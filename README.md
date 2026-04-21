@@ -1,19 +1,19 @@
 # ansible-roboshop
 
-> Ansible-driven deployment of the 11-service RoboShop microservices platform on AWS EC2.
+Ansible-driven deployment of the 11-service RoboShop microservices platform on AWS EC2.
 
 ![Ansible](https://img.shields.io/badge/Ansible-EE0000?logo=ansible&logoColor=white)
 ![YAML](https://img.shields.io/badge/YAML-CB171E?logo=yaml&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-232F3E?logo=amazonaws&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
 
-## What this is
+## Overview
 
-The Ansible version of the RoboShop deployment — same 11 services (`mongodb`, `redis`, `mysql`, `rabbitmq`, `catalogue`, `user`, `cart`, `shipping`, `payment`, `dispatch`, `web`), now provisioned through flat Ansible playbooks instead of bash.
+The Ansible version of the RoboShop deployment. Same 11 services (`mongodb`, `redis`, `mysql`, `rabbitmq`, `catalogue`, `user`, `cart`, `shipping`, `payment`, `dispatch`, `web`), provisioned through flat Ansible playbooks instead of bash.
 
-This is the "before the roles refactor" step: everything works, but logic lives in playbooks rather than reusable units. The [`ansible-roboshop-roles`](https://github.com/sashank1064/ansible-roboshop-roles) repo shows the refactor.
+This is the pre-refactor step. The [`ansible-roboshop-roles`](https://github.com/sashank1064/ansible-roboshop-roles) repo contains the same deployment broken out into proper Ansible roles.
 
-## Why rewrite the shell version in Ansible?
+## Why Ansible over bash
 
 | Concern | Bash | Ansible |
 |---|---|---|
@@ -21,7 +21,7 @@ This is the "before the roles refactor" step: everything works, but logic lives 
 | State inspection | None | `--check` and `--diff` |
 | Parallelism across hosts | `xargs`, ssh loops | Native `forks` |
 | Inventory management | Static scripts | Dynamic inventory, group vars |
-| Readability for reviewers | Medium | High |
+| Readability | Medium | High |
 
 ## Repo layout
 
@@ -44,7 +44,7 @@ This is the "before the roles refactor" step: everything works, but logic lives 
 └── web.yml                   # nginx + reverse proxy config
 ```
 
-## Running it
+## Usage
 
 ```bash
 # Install collections
@@ -67,20 +67,9 @@ ansible-playbook -i inventory.ini web.yml
 - **Tags per service phase.** `--tags install,config,service` lets me iterate on one phase at a time.
 - **No hard-coded secrets.** Sensitive values come from Ansible Vault or AWS SSM.
 
-## What I'd change in production
+## Related repos
 
-- Pull host inventory from AWS EC2 dynamic inventory plugin instead of static `inventory.ini`
-- Add Molecule tests for each play
-- Gate the data-tier plays behind a CI approval step
-- Replace the `web` Nginx config with an ALB + target groups
-
-## Progression
-
-1. [`shell-roboshop`](https://github.com/sashank1064/shell-roboshop) — bash baseline
-2. **`ansible-roboshop`** ← you are here
-3. [`ansible-roboshop-roles`](https://github.com/sashank1064/ansible-roboshop-roles) — refactored to reusable roles
-4. [`terraform-multi-env`](https://github.com/sashank1064/terraform-multi-env) — infra layer
-
----
-
-Part of my DevOps portfolio. Suggestions welcome.
+1. [`shell-roboshop`](https://github.com/sashank1064/shell-roboshop): bash baseline
+2. `ansible-roboshop` (this repo)
+3. [`ansible-roboshop-roles`](https://github.com/sashank1064/ansible-roboshop-roles): refactored to reusable roles
+4. [`terraform-multi-env`](https://github.com/sashank1064/terraform-multi-env): infra layer
